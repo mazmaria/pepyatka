@@ -1821,10 +1821,6 @@ App.PostsController = Ember.ArrayController.extend(Ember.SortableMixin, App.Pagi
   findOne: function(postId) {
     var that = this
 
-    if (typeof postId !== 'string') {
-      postId = postId.id
-    }
-
     var post = App.Post.create({
       id: postId
     });
@@ -1876,6 +1872,9 @@ App.PostRoute = Ember.Route.extend({
   setupController: function(controller, model) {
     // TODO: one we migrate onePostController to postController we are
     // good to drop this method
+    if (typeof model !== 'string') {
+      model = model.id
+    }
     var post = App.postsController.findOne(model);
     this.controllerFor('onePost').set('content', post);
   },
@@ -1895,7 +1894,7 @@ App.PublicRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
-    // TODO: findAll method to accept timeline parameter
+    // TODO: findAll method to accept timeline parameter    
     App.postsController.set('timeline', model)
     return App.postsController.findAll()
   },
