@@ -1976,7 +1976,7 @@ App.SubscriptionsRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
-    var subscriptions = App.subscribersController.findAll(model)
+    var subscriptions = App.subscriptionsController.findAll(model)
     this.controllerFor('subscriptions').set('content', subscriptions);
   }
 })
