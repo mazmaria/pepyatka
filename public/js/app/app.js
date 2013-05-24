@@ -1961,12 +1961,12 @@ App.CommentsRoute = Ember.Route.extend({
 
 App.SubscribersRoute = Ember.Route.extend({
   model: function(params) {
-    return params.username
+    return subscribers = App.subscribersController.findAll(params.username)
   },
 
   setupController: function(controller, model) {
     var subscribers = App.subscribersController.findAll(model)
-    this.controllerFor('subscrbers').set('content', subscribers);
+    this.controllerFor('subscribers').set('content', model);
   }
 })
 
