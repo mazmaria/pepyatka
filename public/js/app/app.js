@@ -1865,14 +1865,13 @@ App.PostRoute = Ember.Route.extend({
     // TODO: move findOne to model and make it like this
     // App.Post.find(params_post_id) then we are good to delete this
     // method
-    return params.post_id
+    return App.postsController.findOne(params.post_id);
   },
 
   setupController: function(controller, model) {
     // TODO: one we migrate onePostController to postController we are
     // good to drop this method
-    var post = App.postsController.findOne(model);
-    this.controllerFor('onePost').set('content', post);
+    this.controllerFor('onePost').set('content', model);
   },
 
   renderTemplate: function() {
