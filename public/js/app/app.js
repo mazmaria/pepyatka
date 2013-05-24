@@ -1820,6 +1820,11 @@ App.PostsController = Ember.ArrayController.extend(Ember.SortableMixin, App.Pagi
 
   findOne: function(postId) {
     var that = this
+
+    if (typeof postId !== 'string') {
+      postId = postId.id
+    }
+
     var post = App.Post.create({
       id: postId
     });
@@ -1865,13 +1870,14 @@ App.PostRoute = Ember.Route.extend({
     // TODO: move findOne to model and make it like this
     // App.Post.find(params_post_id) then we are good to delete this
     // method
-    return App.postsController.findOne(params.post_id);
+    return params.post_id
   },
 
   setupController: function(controller, model) {
     // TODO: one we migrate onePostController to postController we are
     // good to drop this method
-    this.controllerFor('onePost').set('content', model);
+    var post = App.postsController.findOne(model);
+    this.controllerFor('onePost').set('content', post);
   },
 
   renderTemplate: function() {
