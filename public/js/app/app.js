@@ -1122,7 +1122,7 @@ App.User = Ember.Object.extend({
   }.property()
 })
 
-App.CommentsController = Ember.ArrayController.extend({
+App.CommentsController = Ember.Controller.extend({
   resourceUrl: '/v1/comments',
 
   // XXX: noone uses this method
@@ -1939,7 +1939,12 @@ App.UserRoute = Ember.Route.extend({
 })
 
 App.LikesRoute = Ember.Route.extend({
+  model: function(params) {
+    return params.username
+  },
+  
   setupController: function(controller, model) {
+    App.postsController.set('timeline', model)
     var posts = App.postsController.findAll(0, 'likes')
     this.controllerFor('posts').set('content', posts);
   },
@@ -1952,7 +1957,12 @@ App.LikesRoute = Ember.Route.extend({
 })
 
 App.CommentsRoute = Ember.Route.extend({
+  model: function(params) {
+    return params.username
+  },
+
   setupController: function(controller, model) {
+    App.postsController.set('timeline', model)
     var posts = App.postsController.findAll(0, 'comments')
     this.controllerFor('posts').set('content', posts);
   },
