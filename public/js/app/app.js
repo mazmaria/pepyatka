@@ -1122,7 +1122,7 @@ App.User = Ember.Object.extend({
   }.property()
 })
 
-App.CommentsController = Ember.Controller.extend({
+App.CommentsController = Ember.ObjectController.extend({
   resourceUrl: '/v1/comments',
 
   // XXX: noone uses this method
