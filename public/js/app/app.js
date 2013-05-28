@@ -1870,6 +1870,7 @@ App.PostRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
+    App.postsController.set('target', controller.target)
     // TODO: one we migrate onePostController to postController we are
     // good to drop this method
     if (typeof model !== 'string') {
@@ -1975,10 +1976,11 @@ App.CommentsRoute = Ember.Route.extend({
 
 App.SubscribersRoute = Ember.Route.extend({
   model: function(params) {
-    return App.subscribersController.findAll(params.username)
+    return params.username
   },
 
   setupController: function(controller, model) {
+    //App.postsController.set('timeline', model)
     var subscribers = App.subscribersController.findAll(model)
     this.controllerFor('subscribers').set('content', subscribers);
   }
@@ -1986,10 +1988,11 @@ App.SubscribersRoute = Ember.Route.extend({
 
 App.SubscriptionsRoute = Ember.Route.extend({
   model: function(params) {
-    return App.subscriptionsController.findAll(params.username)
+    return params.username
   },
 
   setupController: function(controller, model) {
+    //App.postsController.set('timeline', model)
     var subscriptions = App.subscriptionsController.findAll(model)
     this.controllerFor('subscriptions').set('content', subscriptions);
   }
@@ -2020,6 +2023,11 @@ App.SearchRoute = Ember.Route.extend({
 
   renderTemplate: function() {
     this.render('search-list-view')
+  }
+})
+
+App.ErrorRoute = Ember.Route.extend({
+  setupController: function(controller, model) {
   }
 })
 
