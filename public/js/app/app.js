@@ -1870,12 +1870,12 @@ App.PostRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
+    // TODO: this is workaround for our custom generated controller
     App.postsController.set('target', controller.target)
+
     // TODO: one we migrate onePostController to postController we are
     // good to drop this method
-    if (typeof model !== 'string') {
-      model = model.id
-    }
+    if (typeof model !== 'string') model = model.id
     var post = App.postsController.findOne(model);
     this.controllerFor('onePost').set('content', post);
   },
@@ -1942,8 +1942,9 @@ App.LikesRoute = Ember.Route.extend({
   model: function(params) {
     return params.username
   },
-  
+
   setupController: function(controller, model) {
+    // TODO: findAll method to accept timeline parameter
     App.postsController.set('timeline', model)
     var posts = App.postsController.findAll(0, 'likes')
     this.controllerFor('posts').set('content', posts);
@@ -1962,6 +1963,7 @@ App.CommentsRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
+    // TODO: findAll method to accept timeline parameter
     App.postsController.set('timeline', model)
     var posts = App.postsController.findAll(0, 'comments')
     this.controllerFor('posts').set('content', posts);
@@ -1974,7 +1976,7 @@ App.CommentsRoute = Ember.Route.extend({
   }
 })
 
-App.SubscribersRoute = Ember.Route.extend({
+App.FeedSubscribersRoute = Ember.Route.extend({
   model: function(params) {
     return params.username
   },
@@ -1983,18 +1985,31 @@ App.SubscribersRoute = Ember.Route.extend({
     //App.postsController.set('timeline', model)
     var subscribers = App.subscribersController.findAll(model)
     this.controllerFor('subscribers').set('content', subscribers);
+  },
+
+  renderTemplate: function() {
+    this.render('subscribers', {
+      controller: this.controllerFor('subscribers')
+    })
   }
 })
 
-App.SubscriptionsRoute = Ember.Route.extend({
+App.FeedSubscriptionsRoute = Ember.Route.extend({
   model: function(params) {
     return params.username
   },
 
   setupController: function(controller, model) {
-    //App.postsController.set('timeline', model)
-    var subscriptions = App.subscriptionsController.findAll(model)
+    if (typeof model !== 'string') model = model.username
+
+    var subscriptions =  App.subscriptionsController.findAll(model)
     this.controllerFor('subscriptions').set('content', subscriptions);
+  },
+
+  renderTemplate: function() {
+    this.render('subscriptions', {
+      controller: this.controllerFor('subscriptions')
+    })
   }
 })
 
@@ -2027,7 +2042,26 @@ App.SearchRoute = Ember.Route.extend({
 })
 
 App.ErrorRoute = Ember.Route.extend({
+})
+
+App.StatsRoute = Ember.Route.extend({
+  model: function(params) {
+    return params.category
+  },
+
   setupController: function(controller, model) {
+    if (typeof model !== 'string') model = model.category
+
+    var users = App.topController.getTop(model);
+
+    this.controllerFor('top').set('content', users);
+  },
+
+  renderTemplate: function() {
+    this.render('top-view', {
+      controller: this.controllerFor('top')
+    })
+>>>>>>> b19d8359708c5ca49328bf1737444fcdfa92db77
   }
 })
 
@@ -2040,9 +2074,9 @@ App.Router.map(function() {
   this.resource('post', { path: "/posts/:post_id" })
 
   this.resource('user', { path: "/users/:username" })
-  this.resource('subscribers', { path: "/users/:username/subscribers" })
-  this.resource('manage', { path: "/users/:username/subscribers/manage" }) // TODO
-  this.resource('subscriptions', { path: "/users/:username/subscriptions" })
+  this.resource('feedSubscribers', { path: "/users/:username/subscribers" })
+  this.resource('manageSubscribers', { path: "/users/:username/subscribers/manage" }) // TODO
+  this.resource('feedSubscriptions', { path: "/users/:username/subscriptions" })
   this.resource('likes', { path: "/users/:username/likes" })
   this.resource('comments', { path: "/users/:username/comments" })
 
@@ -2051,9 +2085,9 @@ App.Router.map(function() {
   this.resource('signup', { path: "/signup" })
   this.resource('signin', { path: "/signin" })
 
-  this.resource('stats', { path: "/top/:category" }) // TODO
+  this.resource('stats', { path: "/top/:category" })
 
-  this.resource('error', { path: "/error" }) // TODO
+  this.resource('error', { path: "/error" })
 })
 
 App.Router.reopen({
