@@ -297,10 +297,11 @@ exports.addModel = function(db) {
 
   Group.prototype.addAdministrator = function(feedId, callback) {
     var that = this
-
-    db.zadd('user:' + that.id + ':administrators', new Date().getTime().toString(), feedId, function(err, res) {
-      callback(err, res)
-    })
+    if (feedId !== undefined) {
+      db.zadd('user:' + that.id + ':administrators', new Date().getTime().toString(), feedId, function(err, res) {
+        callback(err, res)
+      })
+    }
   }
 
   Group.prototype.removeAdministrator = function(feedId, callback) {
