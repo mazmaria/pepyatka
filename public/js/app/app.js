@@ -43,7 +43,7 @@ App.PaginationHelper = Em.Mixin.create({
   },
 
   prevPageDisabled: function() {
-    return App.postsController.get('pageStart') == 0 ? 'disabled' : ''
+    return App.postsController.get('pageStart') === 0 ? 'disabled' : ''
   }.property('App.postsController.pageStart'),
 
   prevPageVisible: function() {
@@ -56,7 +56,7 @@ App.PaginationHelper = Em.Mixin.create({
 
   nextPageDisabled: function() {
     var len = this.get('content.content.length')
-    return len == 0 || len < this.get('pageSize') ? 'disabled' : ''
+    return len === 0 || len < this.get('pageSize') ? 'disabled' : ''
     // TODO: bind to generic content
   }.property('App.postsController.content'),
 
@@ -82,7 +82,7 @@ App.SearchPaginationHelper = Em.Mixin.create({
   },
 
   prevPageDisabled: function() {
-    return App.searchController.get('pageStart') == 0 ? 'disabled' : ''
+    return App.searchController.get('pageStart') === 0 ? 'disabled' : ''
   }.property('App.searchController.pageStart'),
 
   prevPageVisible: function() {
@@ -95,7 +95,7 @@ App.SearchPaginationHelper = Em.Mixin.create({
 
   nextPageDisabled: function() {
     var len = App.searchController.content.length;
-    return len == 0 || len < this.get('pageSize') ? 'disabled' : ''
+    return len === 0 || len < this.get('pageSize') ? 'disabled' : ''
     // TODO: bind to generic content
   }.property('App.searchController.content'),
 
@@ -215,9 +215,9 @@ App.Subscription = Ember.Object.extend({
       case "public":
       case "likes":
       case "comments":
-        return App.postsController.pageStart == 0
+        return App.postsController.pageStart === 0
       case "search":
-        return App.searchController.pageStart == 0
+        return App.searchController.pageStart === 0
       }
     }
 
@@ -290,7 +290,7 @@ App.Subscription = Ember.Object.extend({
       if (post) {
         post.comments.pushObject(comment)
       } else {
-        var post = App.postsController.findOne(data.comment.postId)
+        post = App.postsController.findOne(data.comment.postId)
         App.postsController.addObject(post)
       }
     });
@@ -337,7 +337,7 @@ App.Subscription = Ember.Object.extend({
           post.likes.pushObject(user)
         }
       } else {
-        var post = App.postsController.findOne(data.postId)
+        post = App.postsController.findOne(data.postId)
         App.postsController.addObject(post)
       }
     })
@@ -411,7 +411,7 @@ App.Subscription = Ember.Object.extend({
 })
 
 App.ApplicationView = Ember.View.extend(App.ShowSpinnerWhileRendering, {
-  templateName: 'application',
+  templateName: 'application'
 });
 
 App.ApplicationController = Ember.Controller.extend({
@@ -737,7 +737,7 @@ App.LikeView = Ember.View.extend({
       i += 1
     })
     var length = this.get('parentView.content.length')
-    return index == 0 && length == 1
+    return index === 0 && length === 1
   }.property('parentView', 'parentView.content.@each'),
 
   isLastAndNotSingle: function() {
@@ -790,7 +790,7 @@ App.CommentPostViewSubst = Ember.View.extend(Ember.TargetActionSupport, {
     // if (!exist)
     //   return false
 
-    return this.get('parentView.isFormVisible') == false;
+    return this.get('parentView.isFormVisible') === false;
   }.property('parentView.isFormVisible')
 })
 
@@ -801,11 +801,11 @@ App.CommentForm = Ember.View.extend({
   body: '',
 
   isVisible: function() {
-    return this.get('parentView.isFormVisible') == true;
+    return this.get('parentView.isFormVisible') === true;
   }.property('parentView.isFormVisible'),
 
   autoFocus: function () {
-    if (this.get('parentView.isFormVisible') == true) {
+    if (this.get('parentView.isFormVisible') === true) {
       this.$().hide().show();
       this.$('textarea').focus();
       this.$('textarea').trigger('keyup') // to apply autogrow
@@ -840,11 +840,11 @@ App.EditPostForm = Ember.View.extend({
   body: '',
 
   isVisible: function() {
-    return this.get('parentView.isEditFormVisible') == true;
+    return this.get('parentView.isEditFormVisible') === true;
   }.property('parentView.isEditFormVisible'),
 
   autoFocus: function () {
-    if (this.get('parentView.isEditFormVisible') == true) {
+    if (this.get('parentView.isEditFormVisible') === true) {
       this.$().hide().show();
       this.$('textarea').focus();
       this.$('textarea').trigger('keyup') // to apply autogrow
@@ -871,7 +871,7 @@ App.EditCommentForm = Ember.View.extend({
   body: '',
 
   autoFocus: function () {
-    if (this.get('parentView.isEditFormVisible') == true) {
+    if (this.get('parentView.isEditFormVisible') === true) {
       this.$().hide().show();
       this.$('textarea').focus();
       this.$('textarea').trigger('keyup') // to apply autogrow
@@ -1025,8 +1025,8 @@ App.UserTimelineView = Ember.View.extend({
 
   showPostCreationForm: function() {
     return App.postsController.user &&
-      (((App.postsController.user.type == 'user' || !App.postsController.user.type) && App.postsController.user.id == currentUser)
-      || (App.postsController.user.type == 'group' && App.postsController.subscribers.filter(function(subscriber) { return subscriber.id == currentUser})))
+      (((App.postsController.user.type == 'user' || !App.postsController.user.type) && App.postsController.user.id == currentUser) || 
+       (App.postsController.user.type === 'group' && App.postsController.subscribers.filter(function(subscriber) { return subscriber.id == currentUser})))
   }.property('App.postsController.user'),
 
   isGroup: function() {
@@ -1382,7 +1382,6 @@ App.ErrorView = Ember.View.extend({
 App.SubscribersController = Ember.ArrayController.extend({
   resourceUrl: '/v1/users',
   verb: 'subscribers',
-  showManagement: false,
 
   findAll: function(username) {
     this.set('isLoaded', false)
@@ -1414,14 +1413,14 @@ App.SubscribersController = Ember.ArrayController.extend({
 
   removeSubscriber: function(event) {
     $.ajax({
-      url: this.resourceUrl + '/' + this.get('username') + '/subscribers/' + event.context,
+      url: this.resourceUrl + '/' + this.get('username') + '/subscribers/' + event,
       dataType: 'jsonp',
       type: 'post',
       data: {'_method': 'delete'},
       context: this,
       success: function(response) {
         if (response.status == 'success') {
-          var obj = this.findProperty('id', event.context);
+          var obj = this.findProperty('id', event);
           this.removeObject(obj);
         }
       }
@@ -1432,15 +1431,14 @@ App.SubscribersController = Ember.ArrayController.extend({
 
   addAdmin: function(event) {
     $.ajax({
-      url: this.resourceUrl + '/' + this.get('username') + '/subscribers/' + event.context + '/admin',
+      url: this.resourceUrl + '/' + this.get('username') + '/subscribers/' + event + '/admin',
       dataType: 'jsonp',
       type: 'post',
       context: this,
       success: function(response) {
         if (response.status == 'success') {
-          var obj = this.findProperty('id', event.context);
-          if (obj)
-            obj.set('isAdmin', true)
+          var obj = this.findProperty('id', event);
+          if (obj) obj.set('isAdmin', true)
         }
       }
     })
@@ -1450,15 +1448,14 @@ App.SubscribersController = Ember.ArrayController.extend({
 
   removeAdmin: function(event) {
     $.ajax({
-      url: this.resourceUrl + '/' + this.get('username') + '/subscribers/' + event.context + '/unadmin',
+      url: this.resourceUrl + '/' + this.get('username') + '/subscribers/' + event + '/unadmin',
       dataType: 'jsonp',
       type: 'post',
       context: this,
       success: function(response) {
         if (response.status == 'success') {
-          var obj = this.findProperty('id', event.context);
-          if (obj)
-            obj.set('isAdmin', false)
+          var obj = this.findProperty('id', event);
+          if (obj) obj.set('isAdmin', false)
         }
       }
     })
@@ -1471,27 +1468,17 @@ App.subscribersController = App.SubscribersController.create()
 App.SubscribersView = Ember.View.extend({
   templateName: 'subscribers',
 
-  browseSubscribers: function() {
-    // FIXME: this should be a route, not an action!
-    // App.router.transitionTo('subscribers', App.subscribersController.get('username'))
-  },
-
-  manageSubscribers: function() {
-    // FIXME: this should be a route, not an action!
-    // App.router.transitionTo('showManagement', App.subscribersController.get('username'))
-  },
-
   isOwner: function() {
     return App.subscribersController.username  == App.properties.username || App.subscribersController.admins && App.subscribersController.admins.indexOf(currentUser) != -1
-  }.property('App.subscribersController.username', 'App.properties.username'),
+  }.property('App.subscribersController.username', 'App.properties.username', 'App.subscribersController.admins'),
 
   hasAdmins: function() {
     return App.subscribersController.admins !== undefined
   }.property('App.subscribersController.admins'),
 
   showManagement: function() {
-    return App.subscribersController.showManagement
-  }.property('App.subscribersController.showManagement')
+    return App.properties.get('currentPath') === 'manageSubscribers'
+  }.property('App.properties.currentPath')
 });
 
 App.TopController = Ember.ArrayController.extend({
@@ -1994,6 +1981,23 @@ App.FeedSubscribersRoute = Ember.Route.extend({
   }
 })
 
+App.ManageSubscribersRoute = Ember.Route.extend({
+  model: function(params) {
+    return params.username
+  },
+
+  setupController: function(controller, model) {
+    var subscribers = App.subscribersController.findAll(model)
+    this.controllerFor('subscribers').set('content', subscribers);
+  },
+
+  renderTemplate: function() {
+    this.render('subscribers', {
+      controller: this.controllerFor('subscribers')
+    })
+  }
+})
+
 App.FeedSubscriptionsRoute = Ember.Route.extend({
   model: function(params) {
     return params.username
@@ -2087,8 +2091,81 @@ App.Router.map(function() {
   this.resource('stats', { path: "/top/:category" })
 
   this.resource('error', { path: "/error" })
-})
+});
+
+(function() {
+  var get = Ember.get, set = Ember.set;
+  var popstateFired = false;
+  Ember.HistoryJsLocation = Ember.Object.extend({
+    init: function() {
+      set(this, 'location', get(this, 'location') || window.location);
+      this._initialUrl = this.getURL();
+      this.initState();
+    },
+    initState: function() {
+      this.replaceState(this.formatURL(this.getURL()));
+      set(this, 'history', window.History);
+    },
+    rootURL: '/',
+    getURL: function() {
+      var rootURL = get(this, 'rootURL'),
+      url = get(this, 'location').pathname;
+      rootURL = rootURL.replace(/\/$/, '');
+      url = url.replace(rootURL, '');
+      return url;
+    },
+    setURL: function(path) {
+      path = this.formatURL(path);
+      if (this.getState() && this.getState().path !== path) {
+        this.pushState(path);
+      }
+    },
+    replaceURL: function(path) {
+      path = this.formatURL(path);
+      if (this.getState() && this.getState().path !== path) {
+        this.replaceState(path);
+      }
+    },
+    getState: function() {
+      return get(this, 'history').getState().data;
+    },
+    pushState: function(path) {
+      History.pushState({ path: path }, null, path);
+    },
+    replaceState: function(path) {
+      History.replaceState({ path: path }, null, path);
+    },
+    onUpdateURL: function(callback) {
+      var guid = Ember.guidFor(this),
+      self = this;
+      Ember.$(window).bind('popstate.ember-location-'+guid, function(e) {
+        if(!popstateFired) {
+          popstateFired = true;
+          if (self.getURL() === self._initialUrl) { return; }
+        }
+        callback(self.getURL());
+      });
+    },
+    formatURL: function(url) {
+      var rootURL = get(this, 'rootURL');
+      if (url !== '') {
+        rootURL = rootURL.replace(/\/$/, '');
+      }
+      return rootURL + url;
+    },
+    willDestroy: function() {
+      var guid = Ember.guidFor(this);
+      Ember.$(window).unbind('popstate.ember-location-'+guid);
+    }
+  });
+  Ember.Location.registerImplementation('historyJs', Ember.HistoryJsLocation);
+})();
 
 App.Router.reopen({
+<<<<<<< HEAD
   location: 'history'
 })
+=======
+  location: 'historyJs'
+});
+>>>>>>> 100fb51633d94ca730ca1f957fa70e27ffccc02c
