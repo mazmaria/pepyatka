@@ -2061,7 +2061,6 @@ App.StatsRoute = Ember.Route.extend({
     this.render('top-view', {
       controller: this.controllerFor('top')
     })
->>>>>>> b19d8359708c5ca49328bf1737444fcdfa92db77
   }
 })
 
