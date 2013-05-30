@@ -71,7 +71,8 @@ exports.addRoutes = function(app) {
       requireAuthorization(req.user, mainFeed, function(err, isAuthorized) {
         if (!isAuthorized)
           return res.jsonp({ err: err, status: 'fail'})
-
+        if (req.params.userId === undefined)
+          return res.jsonp({ err: err, status: 'fail'})
         mainFeed.addAdministrator(req.params.userId, function(err, result) {
           if (err) return res.jsonp({ err: err, status: 'fail'})
 
