@@ -316,9 +316,6 @@ exports.addModel = function(db) {
       if (administratorsIds.indexOf(feedId) == -1)
         return callback(null)
 
-      if (administratorsIds.length === 1)
-        return callback(1)
-
       // Don't remove last admin even if there are 'undefined' admins for this group
       var count = administratorsIds.reduce(function (adminsNumber, administratorId){
         models.FeedFactory.findById(administratorId, function(err, user) {

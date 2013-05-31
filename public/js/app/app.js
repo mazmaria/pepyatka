@@ -2078,6 +2078,16 @@ App.StatsRoute = Ember.Route.extend({
   }
 })
 
+App.SettingsRoute = Ember.Route.extend({
+  model: function(params) {
+    return params.username
+  },
+
+  setupController: function(controller, model) {
+    
+  }
+})
+
 App.Router.map(function() {
   this.resource('feedSearch', { path: "/search/:query" })
 
@@ -2101,6 +2111,7 @@ App.Router.map(function() {
   this.resource('stats', { path: "/top/:category" })
 
   this.resource('error', { path: "/error" })
+  this.resource('settings', { path: "/users/:username/settings" })
 });
 
 (function() {

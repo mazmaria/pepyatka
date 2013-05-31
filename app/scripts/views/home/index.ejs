@@ -67,8 +67,8 @@
               </div>
               <div>
 
-                <!--<a>{{t label.settings}}</a>
-                --->
+                {{#linkTo settings App.properties.username}}{{t label.settings}}{{/linkTo}}
+
                 <% if (!conf.remoteUser) { %>
                   <a href="/logout">{{t label.signout}}</a>
                 <% } %>
