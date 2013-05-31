@@ -298,7 +298,7 @@ exports.addModel = function(db) {
   Group.prototype.addAdministrator = function(feedId, callback) {
     var that = this
 
-    if (feedId !== undefined) return callback(1, null)
+    if (feedId === 'undefined') return callback(1, null)
 
     db.zadd('user:' + that.id + ':administrators', new Date().getTime().toString(), feedId, function(err, res) {
       callback(err, res)
@@ -319,12 +319,15 @@ exports.addModel = function(db) {
       if (administratorsIds.length === 1)
         return callback(1)
 
-      var adminsNumber = administratorsIds.length
-      async.map(administratorsIds, function(administratorId, callback) {
-        if (administratorId === 'undefined') adminsNumber--
-      })
+      // Don't remove last admin even if there are 'undefined' admins for this group
+      var count = administratorsIds.reduce(function (adminsNumber, administratorId){
+        models.FeedFactory.findById(administratorId, function(err, user) {
+          if (user === null) adminsNumber--
+        })
+        return adminsNumber
+      }, administratorsIds.length);
 
-      if (adminsNumber === 1)
+      if (count === 1)
         return callback(1)
 
       db.zrem('user:' + that.id + ':administrators', feedId, function(err, res) {
@@ -374,8 +377,8 @@ exports.addModel = function(db) {
     if (select.indexOf('admins') != -1) {
       that.getAdministratorsIds(function(err, administratorsIds) {
         async.map(administratorsIds, function(administratorId, callback) {
-          if (administratorId === 'undefined') return callback(err, null)
           models.FeedFactory.findById(administratorId, function(err, user) {
+            if (user === null) return callback(err, null)
             user.toJSON({ select: ['id', 'username'] }, function(err, json) {
               callback(err, json)
             })
