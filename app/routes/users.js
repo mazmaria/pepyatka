@@ -51,6 +51,19 @@ exports.addRoutes = function(app) {
     res.redirect('/v1/users/' + userId)
   })
 
+  app.post('/v1/user/settings', function(req, res) {
+    if (!req.user)
+      return res.jsonp({})
+
+    var userId = req.user.id
+    var userEmail = req.param('email')
+
+    if (!userId)
+      return res.jsonp({}, 404)
+
+    res.redirect('/v1/users/' + userId)
+  })
+
   app.get('/v1/users/:username/subscribers', function(req, res) {
     models.FeedFactory.findByName(req.params.username, function(err, feed) {
       if (!feed)

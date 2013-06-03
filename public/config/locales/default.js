@@ -44,6 +44,7 @@ Em.I18n.translations = {
   'button.create': 'Create',
   'button.signUp': 'Sign up',
   'button.signIn': 'Sign in',
+  'button.save': 'Save',
 
   'header.createGroup': 'Create group',
   'header.groups': 'Groups',
@@ -54,5 +55,6 @@ Em.I18n.translations = {
   'header.signUp': 'Sign up',
   'header.members': 'Members',
   'header.admins': 'Admins',
-  'header.notFound': 'File not found'
+  'header.notFound': 'File not found',
+  'header.settings': 'Settings'
 };

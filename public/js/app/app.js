@@ -2078,13 +2078,53 @@ App.StatsRoute = Ember.Route.extend({
   }
 })
 
+App.SettingsController = Ember.ArrayController.extend({
+  resourceUrl: '/v1/user/settings',
+  content: [],
+
+  save: function() {
+    $.ajax({
+      url: this.resourceUrl,
+      data: { email: this.get('email') },
+      dataType: 'jsonp',
+      type: 'post',
+      context: this,
+      success: function(response) {
+        switch (response.status) {
+          case 'success':
+            //App.groupsController.addObject(this.get('email'))
+            //this.transitionToRoute('user', this.get('name'))
+            break
+          case 'fail':
+            this.transitionToRoute('settings')
+            break
+        }
+      }
+    })
+    return this
+  }
+})
+App.settingsController = App.SettingsController.create()
+
+App.SettingsView = Ember.View.extend({
+  templateName: 'settings-view',
+
+  insertNewline: function() {
+    this.triggerAction();
+  }
+});
+
 App.SettingsRoute = Ember.Route.extend({
-  model: function(params) {
-    return params.username
+  model: function() {
+    return null
   },
 
   setupController: function(controller, model) {
-    
+
+  },
+
+  renderTemplate: function() {
+    this.render('settings-view')
   }
 })
 
@@ -2110,8 +2150,8 @@ App.Router.map(function() {
 
   this.resource('stats', { path: "/top/:category" })
 
-  this.resource('error', { path: "/error" })
-  this.resource('settings', { path: "/users/:username/settings" })
+  this.resource('error', { path: "/error" }),
+  this.resource('settings', { path: "/settings" })
 });
 
 (function() {

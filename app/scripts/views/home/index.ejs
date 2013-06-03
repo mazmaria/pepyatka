@@ -67,7 +67,7 @@
               </div>
               <div>
 
-                {{#linkTo settings App.properties.username}}{{t label.settings}}{{/linkTo}}
+                {{#linkTo settings}}{{t label.settings}}{{/linkTo}}
 
                 <% if (!conf.remoteUser) { %>
                   <a href="/logout">{{t label.signout}}</a>
@@ -883,3 +883,23 @@
   window.onpaint = preloadFunc();
 </script>
 
+<script type="text/x-handlebars" data-template-name="settings-view">
+  <div class="span3">
+    <h2>{{t header.settings}}</h2>
+
+    <form action="/settings" method="post" class="form-horizontal">
+      <div class="control-group">
+        <label class="control-label" for="username">Email</label>
+        <div class="controls">
+          {{view Ember.TextField valueBinding="email" type="text" id="email" name="email"}}
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls span2">
+          <button {{action save}} class="btn btn-primary">{{t button.save}}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</script>

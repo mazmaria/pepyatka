@@ -45,7 +45,7 @@ exports.addRoutes = function(app) {
     res.render('./home')
   });
   
-  app.get('/users/:username/settings', function(req, res) {
+  app.get('/settings', function(req, res) {
     res.render('./home')
   });
 
