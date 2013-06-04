@@ -734,14 +734,9 @@ exports.addModel = function(db) {
         json.type = that.type
 
       if (select.indexOf('info') != -1) {
-        that.getInfo(['email'], function(err, items) {
-          async.forEach(items, function(item, callback) {
-
-          }, function(err, itemsJSON) {
-            json.info = itemsJSON
-
-            returnJSON(err)
-          })
+        that.getInfo(function(err, items) {
+          json.info = items
+          returnJSON(err)
         })
       }
 
@@ -804,11 +799,10 @@ exports.addModel = function(db) {
       returnJSON(null)
     },
 
-    getInfo: function(params, callback) {
+    getInfo: function(callback) {
       var that = this
-      db.hmget('user:' + that.id + ':info', params, function(err, items) {
-        that.items = items || []
-        callback(err, that.items)
+      db.hgetall('user:' + that.id + ':info', function(err, items) {
+        callback(err, items)
       })
     }
   }
