@@ -150,15 +150,14 @@ exports.addModel = function(db) {
               stopList.indexOf(that.username) == -1)
     },
 
-    save: function(callback) {
+    create: function(callback) {
       var that = this
 
       // XXX: I copy these 4 lines from model to model - define proper
       // parent object and inherit all models from it
-      if (!this.createdAt)
-        this.createdAt = new Date().getTime()
+      this.createdAt = new Date().getTime()
       this.updatedAt = new Date().getTime()
-      if (this.id === undefined) this.id = uuid.v4()
+      this.id = uuid.v4()
 
       this.validate(function(valid) {
         if (valid) {
@@ -194,6 +193,44 @@ exports.addModel = function(db) {
                 ], function(err, res) {
                   callback(err, that)
                 })
+              })
+            } else {
+              callback(err, res)
+            }
+          })
+        } else {
+          callback(1, that)
+        }
+      })
+    },
+
+    update: function(params, callback) {
+      var that = this
+      // XXX: I copy these 4 lines from model to model - define proper
+      // parent object and inherit all models from it
+      this.updatedAt = new Date().getTime()
+      this.validate(function(valid) {
+        if (valid) {
+          db.exists('user:' + that.id, function(err, res) {
+            if (res !== 0) {
+              async.parallel([
+                function(done) {
+                  db.hmset('user:' + that.id,
+                           { 'updatedAt': that.updatedAt.toString()
+                           },
+                           function(err, res) {
+                             done(err, res)
+                           })
+                },
+                function(done) {
+                  db.hmset('user:' + that.id + ':info',
+                           { 'email': params.email.toString().trim()
+                           }, function(err, res) {
+                             done(err, res)
+                           })
+                }
+              ], function(err, res) {
+                callback(err, that)
               })
             } else {
               callback(err, res)
@@ -672,6 +709,9 @@ exports.addModel = function(db) {
         if(select.indexOf('subscribers') != -1) {
           isReady = isReady && json.subscribers !== undefined
         }
+        if(select.indexOf('info') != -1) {
+          isReady = isReady && json.info !== undefined
+        }
 
         if(isReady) {
           callback(err, json)
@@ -692,6 +732,18 @@ exports.addModel = function(db) {
 
       if (select.indexOf('type') != -1)
         json.type = that.type
+
+      if (select.indexOf('info') != -1) {
+        that.getInfo(['email'], function(err, items) {
+          async.forEach(items, function(item, callback) {
+
+          }, function(err, itemsJSON) {
+            json.info = itemsJSON
+
+            returnJSON(err)
+          })
+        })
+      }
 
       if (select.indexOf('subscriptions') != -1) {
         that.getSubscriptions(function(err, subscriptions) {
@@ -750,6 +802,14 @@ exports.addModel = function(db) {
       }
 
       returnJSON(null)
+    },
+
+    getInfo: function(params, callback) {
+      var that = this
+      db.hmget('user:' + that.id + ':info', params, function(err, items) {
+        that.items = items || []
+        callback(err, that.items)
+      })
     }
   }
   

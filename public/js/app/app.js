@@ -2085,15 +2085,13 @@ App.SettingsController = Ember.ArrayController.extend({
   save: function() {
     $.ajax({
       url: this.resourceUrl,
-      data: { email: this.get('email') },
-      dataType: 'jsonp',
       type: 'post',
+      data: { email: this.get('email'), '_method': 'patch' },
       context: this,
       success: function(response) {
         switch (response.status) {
           case 'success':
-            //App.groupsController.addObject(this.get('email'))
-            //this.transitionToRoute('user', this.get('name'))
+          //
             break
           case 'fail':
             this.transitionToRoute('settings')
@@ -2107,7 +2105,8 @@ App.SettingsController = Ember.ArrayController.extend({
 App.settingsController = App.SettingsController.create()
 
 App.SettingsView = Ember.View.extend({
-  templateName: 'settings-view',
+ // templateName: 'settings-view',
+  email: 'email',
 
   insertNewline: function() {
     this.triggerAction();

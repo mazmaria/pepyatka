@@ -23,11 +23,14 @@ exports.addRoutes = function(app) {
     },
     subscribers: {
       select: ['id', 'username', 'type', 'admins']
+    },
+    info: {
+      select: ['email']
     }
   }
 
   var userSerializer = {
-    select: ['id', 'username', 'admins', 'type']
+    select: ['id', 'username', 'admins', 'type', 'info']
   }
 
   var subscriptionSerializer = {
@@ -51,17 +54,16 @@ exports.addRoutes = function(app) {
     res.redirect('/v1/users/' + userId)
   })
 
-  app.post('/v1/user/settings', function(req, res) {
+  app.patch('/v1/user/settings', function(req, res) {
     if (!req.user)
       return res.jsonp({})
-
-    var userId = req.user.id
-    var userEmail = req.param('email')
-
-    if (!userId)
-      return res.jsonp({}, 404)
-
-    res.redirect('/v1/users/' + userId)
+    models.FeedFactory.findById(req.user.id, function(err, user) {
+      var params = { email: req.param('email') }
+      user.update(params, function(err, user) {
+        if (err) return res.jsonp({}, 422)
+        res.jsonp({})
+      })
+    })
   })
 
   app.get('/v1/users/:username/subscribers', function(req, res) {

@@ -884,22 +884,24 @@
 </script>
 
 <script type="text/x-handlebars" data-template-name="settings-view">
-  <div class="span3">
-    <h2>{{t header.settings}}</h2>
+  {{#view App.SettingsView}}
+    <div class="span3">
+      <h2>{{t header.settings}}</h2>
 
-    <form action="/settings" method="post" class="form-horizontal">
-      <div class="control-group">
-        <label class="control-label" for="username">Email</label>
-        <div class="controls">
-          {{view Ember.TextField valueBinding="email" type="text" id="email" name="email"}}
+      <form action="/settings" method="post" class="form-horizontal">
+        <div class="control-group">
+          <label class="control-label" for="username">Email</label>
+          <div class="controls">
+            {{view Ember.TextField valueBinding="view.email" type="text" id="email" name="email"}}
+          </div>
         </div>
-      </div>
 
-      <div class="control-group">
-        <div class="controls span2">
-          <button {{action save}} class="btn btn-primary">{{t button.save}}</button>
+        <div class="control-group">
+          <div class="controls span2">
+            <button {{action save}} class="btn btn-primary">{{t button.save}}</button>
+          </div>
         </div>
-      </div>
-    </form>
-  </div>
+      </form>
+    </div>
+  {{/view}}
 </script>
