@@ -2079,24 +2079,36 @@ App.StatsRoute = Ember.Route.extend({
 })
 
 App.SettingsController = Ember.ArrayController.extend({
-  resourceUrl: '/v1/user/settings',
+  saveUrl: '/v1/user/settings',
+  resourceUrl: '/v1/users',
   content: [],
 
-  save: function() {
+  find: function(userId) {
+    var that = this
+    var user = App.User.create({
+      id: userId
+    });
+
     $.ajax({
-      url: this.resourceUrl,
-      type: 'post',
-      data: { email: this.get('email'), '_method': 'patch' },
+      url: this.resourceUrl + '/' + userId,
+      dataType: 'jsonp',
       context: this,
       success: function(response) {
-        switch (response.status) {
-          case 'success':
-          //
-            break
-          case 'fail':
-            this.transitionToRoute('settings')
-            break
-        }
+        App.settingsController.set('email', response.info.email)
+      },
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+      }
+    })
+    return user;
+  },
+
+  save: function(email) {
+    $.ajax({
+      url: this.saveUrl,
+      type: 'post',
+      data: { email: email, '_method': 'patch' },
+      context: this,
+      success: function(response) {
       }
     })
     return this
@@ -2106,10 +2118,16 @@ App.settingsController = App.SettingsController.create()
 
 App.SettingsView = Ember.View.extend({
  // templateName: 'settings-view',
-  email: 'email',
+  emailBinding: 'App.settingsController.email',
 
   insertNewline: function() {
     this.triggerAction();
+  },
+
+  save: function() {
+  //  if (this.email) {
+      App.settingsController.save(this.email)
+  // }
   }
 });
 
@@ -2119,7 +2137,7 @@ App.SettingsRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
-
+    App.settingsController.find(App.properties.get('userId'));
   },
 
   renderTemplate: function() {

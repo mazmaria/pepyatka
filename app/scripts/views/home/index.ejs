@@ -67,7 +67,9 @@
               </div>
               <div>
 
+              <% if (req.user && req.user.username != 'anonymous') { %>
                 {{#linkTo settings}}{{t label.settings}}{{/linkTo}}
+              <% } %>
 
                 <% if (!conf.remoteUser) { %>
                   <a href="/logout">{{t label.signout}}</a>
@@ -898,7 +900,7 @@
 
         <div class="control-group">
           <div class="controls span2">
-            <button {{action save}} class="btn btn-primary">{{t button.save}}</button>
+            <button {{action save target="view"}} class="btn btn-primary">{{t button.save}}</button>
           </div>
         </div>
       </form>
