@@ -2078,10 +2078,8 @@ App.StatsRoute = Ember.Route.extend({
   }
 })
 
-App.SettingsController = Ember.ArrayController.extend({
-  saveUrl: '/v1/user/settings',
+App.User.reopenClass({
   resourceUrl: '/v1/users',
-  content: [],
 
   find: function(userId) {
     var that = this
@@ -2094,17 +2092,21 @@ App.SettingsController = Ember.ArrayController.extend({
       dataType: 'jsonp',
       context: this,
       success: function(response) {
-        App.settingsController.set('email', response.info.email)
+        App.properties.set('userEmail', response.info.email)
       },
       error: function(XMLHttpRequest, textStatus, errorThrown) {
       }
     })
     return user;
-  },
+  }
+})
+
+App.SettingsController = Ember.ObjectController.extend({
+  resourceUrl: '/v1/user/settings',
 
   save: function(email) {
     $.ajax({
-      url: this.saveUrl,
+      url: this.resourceUrl,
       type: 'post',
       data: { email: email, '_method': 'patch' },
       context: this,
@@ -2117,8 +2119,7 @@ App.SettingsController = Ember.ArrayController.extend({
 App.settingsController = App.SettingsController.create()
 
 App.SettingsView = Ember.View.extend({
- // templateName: 'settings-view',
-  emailBinding: 'App.settingsController.email',
+  emailBinding: 'App.properties.userEmail',
 
   insertNewline: function() {
     this.triggerAction();
@@ -2133,11 +2134,11 @@ App.SettingsView = Ember.View.extend({
 
 App.SettingsRoute = Ember.Route.extend({
   model: function() {
-    return null
+    return App.User.find(App.properties.get('userId'))
   },
 
   setupController: function(controller, model) {
-    App.settingsController.find(App.properties.get('userId'));
+
   },
 
   renderTemplate: function() {
