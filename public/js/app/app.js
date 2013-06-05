@@ -2111,6 +2111,7 @@ App.SettingsController = Ember.ObjectController.extend({
       data: { email: email, '_method': 'patch' },
       context: this,
       success: function(response) {
+        App.properties.set('userEmail', response.info.email)
       }
     })
     return this

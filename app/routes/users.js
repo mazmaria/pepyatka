@@ -61,7 +61,7 @@ exports.addRoutes = function(app) {
       var params = { email: req.param('email') }
       user.update(params, function(err, user) {
         if (err) return res.jsonp({}, 422)
-        res.jsonp({})
+        user.toJSON(userSerializer, function(err, json) { res.jsonp(json) })
       })
     })
   })
