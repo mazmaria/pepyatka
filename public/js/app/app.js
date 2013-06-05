@@ -2082,22 +2082,15 @@ App.User.reopenClass({
   resourceUrl: '/v1/users',
 
   find: function(userId) {
-    var that = this
-    var user = App.User.create({
-      id: userId
-    });
-
+    var user = App.User.create()
     $.ajax({
       url: this.resourceUrl + '/' + userId,
       dataType: 'jsonp',
-      context: this,
       success: function(response) {
-        App.properties.set('userEmail', response.info.email)
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        user.setProperties(response)
       }
     })
-    return user;
+    return user
   }
 })
 
@@ -2111,25 +2104,22 @@ App.SettingsController = Ember.ObjectController.extend({
       data: { email: email, '_method': 'patch' },
       context: this,
       success: function(response) {
-        App.properties.set('userEmail', response.info.email)
+        this.set('content', response);
       }
     })
     return this
   }
 })
-App.settingsController = App.SettingsController.create()
 
 App.SettingsView = Ember.View.extend({
-  emailBinding: 'App.properties.userEmail',
+  emailBinding: 'controller.content.info.email',
 
   insertNewline: function() {
     this.triggerAction();
   },
 
   save: function() {
-  //  if (this.email) {
-      App.settingsController.save(this.email)
-  // }
+    this.get('controller').save(this.email)
   }
 });
 
@@ -2139,7 +2129,7 @@ App.SettingsRoute = Ember.Route.extend({
   },
 
   setupController: function(controller, model) {
-
+    controller.set('content', model)
   },
 
   renderTemplate: function() {
