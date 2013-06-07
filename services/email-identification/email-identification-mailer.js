@@ -1,6 +1,5 @@
 var nodemailer = require('nodemailer');
 
-
 exports.sendMailToUser = function(conf, message){
   // Create a SMTP transport object
   var transport = nodemailer.createTransport("SMTP", {
