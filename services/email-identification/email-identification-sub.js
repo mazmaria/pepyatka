@@ -21,7 +21,7 @@ exports.listen = function() {
             if (json.info === null)
               return err
             var messageToSend = {
-              from: 'Pepyatka <pepyatka@gmail.com>',
+              from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
               to: json.username + ' <' + json.info.email + '>',
               subject: 'New post added to our site',
               headers: {
