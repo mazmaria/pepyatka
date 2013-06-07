@@ -4,7 +4,12 @@ exports.getAppConfig = function () {
     saltSecret: 'sectet token',
     port: 3000,
     loggerLevel: 'info',
-    remoteUser: false
+    remoteUser: false,
+
+    sendFromName: 'Pepyatka',
+    sendFromEmail: 'email_address',
+    serviceEmail: 'email_address',
+    servicePass: '123456'
   }
 
   return configValues;
