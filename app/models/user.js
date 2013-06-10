@@ -22,6 +22,7 @@ exports.addModel = function(db) {
       this.updatedAt = parseInt(params.updatedAt, 10)
 
     this.type = "user"
+    this.screenName = 'screenname'
   }
 
   User.getAttributes = function() {
@@ -224,7 +225,8 @@ exports.addModel = function(db) {
                 },
                 function(done) {
                   db.hmset('user:' + that.id + ':info',
-                           { 'email': params.email.toString().trim(),
+                           { 'screenName': params.screenName.toString().trim(),
+                             'email': params.email.toString().trim(),
                              'receiveEmails': params.receiveEmails.toString().trim()
                            }, function(err, res) {
                              done(err, res)

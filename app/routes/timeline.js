@@ -6,11 +6,14 @@ exports.addRoutes = function(app) {
     select: ['id', 'posts', 'user', 'subscribers'],
     posts: {
       select: ['id', 'body', 'createdBy', 'attachments', 'comments', 'createdAt', 'updatedAt', 'likes', 'groups'],
-      createdBy: { select: ['id', 'username'] },
+      createdBy: { select: ['id', 'username', 'info'],
+                    info: { select: ['screenName'] }},
       comments: { select: ['id', 'body', 'createdBy'],
-                  createdBy: { select: ['id', 'username'] }
+                  createdBy: { select: ['id', 'username', 'info'],
+                    info: { select: ['screenName'] }}
                 },
-      likes: { select: ['id', 'username'] },
+      likes: { select: ['id', 'username', 'info'],
+                info: { select: ['screenName'] }},
       groups: { select: ['id', 'username'] }
     },
     user: {
@@ -24,7 +27,8 @@ exports.addRoutes = function(app) {
   }
 
   var subscriberSerializer = {
-    select: ['id', 'username']
+    select: ['id', 'username', 'info'],
+      info: {select: ['screenNmae'] }
   }
 
   app.get('/v1/timeline/:timelineId/subscribers', function(req, res) {

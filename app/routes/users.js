@@ -22,15 +22,18 @@ exports.addRoutes = function(app) {
       user: {select: ['id', 'username', 'type', 'admins'] }
     },
     subscribers: {
-      select: ['id', 'username', 'type', 'admins']
+      select: ['id', 'username', 'type', 'admins', 'info']
     },
     info: {
-      select: ['email', 'receiveEmails']
+      select: ['screenName', 'email', 'receiveEmails']
     }
   }
 
   var userSerializer = {
-    select: ['id', 'username', 'admins', 'type', 'info']
+    select: ['id', 'username', 'admins', 'type', 'info'],
+      info: {
+        select: ['screenName', 'email', 'receiveEmails']
+      }
   }
 
   var subscriptionSerializer = {
@@ -39,7 +42,10 @@ exports.addRoutes = function(app) {
   }
 
   var subscriberSerializer = {
-    select: ['id', 'username']
+    select: ['id', 'username', 'info'],
+      info: {
+        select: ['screenName']
+      }
   }
 
   app.get('/v1/users', function(req, res) {
@@ -58,7 +64,11 @@ exports.addRoutes = function(app) {
     if (!req.user)
       return res.jsonp({})
     models.FeedFactory.findById(req.user.id, function(err, user) {
-      var params = { email: req.param('email'), receiveEmails: req.param('receiveEmails') }
+      var params = {
+        screenName: req.param('screenName'),
+        email: req.param('email'),
+        receiveEmails: req.param('receiveEmails')
+      }
       user.update(params, function(err, user) {
         if (err) return res.jsonp({}, 422)
         user.toJSON(userSerializer, function(err, json) { res.jsonp(json) })

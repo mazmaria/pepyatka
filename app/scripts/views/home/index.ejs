@@ -63,7 +63,7 @@
 
             <div class="media-body">
               <div class="author">
-                {{#linkTo user App.properties.username}}{{App.properties.username}}{{/linkTo}}
+                {{#linkTo user App.properties.username}}{{App.properties.screenName}}{{/linkTo}}
               </div>
               <div>
 
@@ -223,7 +223,7 @@
               {{#if view.commentOwner}}
                 {{t label.you}}
               {{else}}
-                {{createdBy.username}}
+                {{createdBy.info.screenName}}
               {{/if}}
             {{/linkTo}}
           </span>
@@ -259,7 +259,7 @@
 
 <script type="text/x-handlebars" data-template-name="like-view">
   {{#with view.content}}
-    <span class="and">and&nbsp;</span>{{#linkTo user username}}{{username}}{{/linkTo}}<span class="comma">,&nbsp;</span>
+    <span class="and">and&nbsp;</span>{{#linkTo user username}}{{info.screenName}}{{/linkTo}}<span class="comma">,&nbsp;</span>
   {{/with}}
 </script>
 
@@ -274,7 +274,7 @@
 
       <div class="media-body post">
         <h5 class="media-heading author">
-          {{#linkTo user createdBy.username}}{{createdBy.username}}{{/linkTo}}
+          {{#linkTo user createdBy.username}}{{createdBy.info.screenName}}{{/linkTo}}
 
           {{#if view.groupsNames}}
             ({{#linkTo user view.groupsNames}}{{view.groupsNames}}{{/linkTo}})
@@ -607,7 +607,7 @@
     <div class="media-body post">
       <!-- FIXME: showUserTimeline createdBy.username is undefined on a deserialized view -->
       <h5 class="media-heading author">
-        {{#linkTo user createdBy.username}}{{createdBy.username}}{{/linkTo}}
+        {{#linkTo user createdBy.username}}{{createdBy.info.screenName}}{{/linkTo}}
 
         {{#if view.groupsNames}}
           ({{#linkTo user view.groupsNames}}{{view.groupsNames}}{{/linkTo}})
@@ -733,7 +733,7 @@
     {{#each content}}
       {{#unless isAdmin}}
         <li>
-          {{#linkTo user username}}{{username}}{{/linkTo}}
+          {{#linkTo user username}}{{info.screenName}}{{/linkTo}}
 
           {{#if view.isOwner}}
             {{#if view.showManagement}}
@@ -759,7 +759,7 @@
       {{#each content}}
         {{#if isAdmin}}
           <li>
-            {{#linkTo user username}}{{username}}{{/linkTo}}
+            {{#linkTo user username}}{{info.screenName}}{{/linkTo}}
               {{#if view.isOwner}}
                 {{#if view.showManagement}}
                   (
@@ -872,10 +872,12 @@
 <script type="text/javascript">
   var currentUser
   var currentUsername
+  var currentScreenName
   var isAnonymousPermitted
   <% if (req.user) { %>
     currentUser = '<%= req.user.id %>'
     var currentUsername = '<%= req.user.username %>'
+    var currentScreenName = '<%= req.user.screenName %>'
     isAnonymousPermitted = '<%= req.isAnonymousPermitted %>'
   <% } %>
 
@@ -891,6 +893,13 @@
       <h2>{{t header.settings}}</h2>
 
       <form action="/settings" method="post" class="form-horizontal">
+        <div class="control-group">
+          <label class="control-label" for="screenName">Screen name</label>
+          <div class="controls">
+            {{view Ember.TextField valueBinding="view.screenName" type="text" id="screenName" name="screenName"}}
+          </div>
+        </div>
+
         <div class="control-group">
           <label class="control-label" for="email">Email</label>
           <div class="controls">

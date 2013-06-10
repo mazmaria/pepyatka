@@ -28,10 +28,13 @@ exports.addRoutes = function(app) {
 
   var postSerializer = { 
     select: ['id', 'body', 'createdBy', 'attachments', 'comments', 'createdAt', 'updatedAt', 'likes', 'groups'],
-    createdBy: { select: ['id', 'username'] },
+    createdBy: { select: ['id', 'username', 'info'],
+                  info: {select: ['screenName'] }},
     comments: { select: ['id', 'body', 'createdBy'],
-                createdBy: { select: ['id', 'username'] }},
-    likes: { select: ['id', 'username']},
+                createdBy: { select: ['id', 'username', 'info'],
+                  info: {select: ['screenName'] } }},
+    likes: { select: ['id', 'username', 'info'],
+              info: {select: ['screenName'] }},
     groups: { select: ['id', 'username'] }
   }
 

@@ -5,6 +5,7 @@ App = Ember.Application.create({
 App.Properties = Ember.Object.extend({
   isAuthorized: false,
   username: currentUsername,
+  screenName: currentScreenName,
   userId: currentUser,
 
   isAnonym: function() {
@@ -1090,6 +1091,8 @@ App.User = Ember.Object.extend({
   admins: [],
   type: null,
 
+  screenName: null,
+
   subscriptionsLength: function() {
     if (!this.statistics || !this.statistics.subscriptions || this.statistics.subscriptions <= 0)
       return null
@@ -2102,11 +2105,11 @@ App.User.reopenClass({
 App.SettingsController = Ember.ObjectController.extend({
   resourceUrl: '/v1/user/settings',
 
-  save: function(email, receiveEmails) {
+  save: function(screenName, email, receiveEmails) {
     $.ajax({
       url: this.resourceUrl,
       type: 'post',
-      data: { email: email, receiveEmails: receiveEmails, '_method': 'patch' },
+      data: { screenName: screenName, email: email, receiveEmails: receiveEmails, '_method': 'patch' },
       context: this,
       success: function(response) {
         this.set('content', response);
@@ -2117,6 +2120,7 @@ App.SettingsController = Ember.ObjectController.extend({
 })
 
 App.SettingsView = Ember.View.extend({
+  screenNameBinding: 'controller.content.info.screenName',
   emailBinding: 'controller.content.info.email',
   receiveEmailsBinding: 'controller.content.info.receiveEmails',
 
@@ -2125,7 +2129,7 @@ App.SettingsView = Ember.View.extend({
   },
 
   save: function() {
-    this.get('controller').save(this.email, this.receiveEmails)
+    this.get('controller').save(this.screenName, this.email, this.receiveEmails)
   }
 });
 
