@@ -3,6 +3,7 @@ var models = require('./../../app/models')
   , async = require('async')
   , configLocal = require('./../../conf/envLocal.js')
   , fs = require("fs")
+  , ejs = require("ejs")
   , mailer = require('./email-identification-mailer.js');
 
 var htmlTemplate
@@ -40,7 +41,7 @@ exports.listen = function() {
 
       case 'newPost':
         var data = JSON.parse(msg);
-        //if (htmlTemplate === undefined) return
+        if (htmlTemplate === undefined) return
         models.Post.findById(data.postId, function(err, post) {
           if (!post) return
 
@@ -54,8 +55,12 @@ exports.listen = function() {
               user.toJSON(userSerializer, function(err, jsonUser) {
                 if (jsonUser.info === null) return
 
-                htmlTemplate = htmlTemplate.replace('{username}', jsonUser.username)
-                htmlTemplate = htmlTemplate.replace('{post}', post.body)
+                html = ejs.render(htmlTemplate, {
+                  username: jsonUser.username,
+                  post: post.body,
+                  likes: [],
+                  comments: []
+                })
 
                 var messageToSend = {
                   from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
@@ -64,7 +69,7 @@ exports.listen = function() {
                   headers: {
                     'X-Laziness-level': 1000
                   },
-                  html: htmlTemplate
+                  html: html
                 };
                 mailer.sendMailToUser(conf, messageToSend)
               })
@@ -75,26 +80,13 @@ exports.listen = function() {
 
       case 'newComment':
         var data = JSON.parse(msg);
-        //if (htmlTemplate === undefined) return
+        if (htmlTemplate === undefined) return
         models.Comment.findById(data.commentId, function(err, comment) {
           if (!comment) return
           models.Post.findById(data.postId, function(err, post) {
             if (!post) return
 
             post.toJSON(postSerializer, function(err, jsonPost) {
-
-            var _likes = '<p>Liked this post: '
-            async.forEach(jsonPost.likes, function(_like, callback) {
-              _likes = _likes + _like.username + ', ';
-            })
-            _likes = _likes.substring(0, _likes.length - 2) + '</p>'
-
-              var _comments = 'Comments: <ul>'
-              async.forEach(jsonPost.comments, function(_comment, callback) {
-                _comments = _comments + '<li>' + _comment.body + ' - ' + _comment.createdBy.username + '</li>';
-              })
-              _comments = _comments + '</ul>'
-              var _post = '<p>' + post.body + '</p>' + _likes + _comments
 
               models.Timeline.findById(post.timelineId, {}, function(err, timeline) {
                 if (!timeline) return
@@ -106,8 +98,12 @@ exports.listen = function() {
                   user.toJSON(userSerializer, function(err, jsonUser) {
                     if (jsonUser.info === null) return
 
-                    htmlTemplate = htmlTemplate.replace('{username}', jsonUser.username)
-                    htmlTemplate = htmlTemplate.replace('{post}', _post)
+                    html = ejs.render(htmlTemplate, {
+                      username: jsonUser.username,
+                      post: jsonPost.body,
+                      likes: jsonPost.likes,
+                      comments: jsonPost.comments
+                    })
 
                     var messageToSend = {
                       from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
@@ -116,8 +112,9 @@ exports.listen = function() {
                       headers: {
                         'X-Laziness-level': 1000
                       },
-                      html: htmlTemplate
+                      html: html
                     };
+                    console.log('!! ' + jsonUser.info.email)
                     mailer.sendMailToUser(conf, messageToSend)
                   })
                 })
@@ -129,23 +126,11 @@ exports.listen = function() {
 
       case 'newLike':
         var data = JSON.parse(msg);
+        if (htmlTemplate === undefined) return
         models.Post.findById(data.postId, function(err, post) {
           if (!post) return
 
           post.toJSON(postSerializer, function(err, jsonPost) {
-
-            var _likes = '<p>Liked this post: '
-            async.forEach(jsonPost.likes, function(_like, callback) {
-              _likes = _likes + _like.username + ', ';
-            })
-            _likes = _likes.substring(0, _likes.length - 2) + '</p>'
-
-            var _comments = 'Comments: <ul>'
-            async.forEach(jsonPost.comments, function(_comment, callback) {
-              _comments = _comments + '<li>' + _comment.body + ' - ' + _comment.createdBy.username + '</li>';
-            })
-            _comments = _comments + '</ul>'
-            var _post = '<p>' + post.body + '</p>' + _likes + _comments
 
             models.Timeline.findById(post.timelineId, {}, function(err, timeline) {
               if (!timeline) return
@@ -157,8 +142,13 @@ exports.listen = function() {
                 user.toJSON(userSerializer, function(err, jsonUser) {
                   if (jsonUser.info === null) return
 
-                  htmlTemplate = htmlTemplate.replace('{username}', jsonUser.username)
-                  htmlTemplate = htmlTemplate.replace('{post}', _post)
+                  html = ejs.render(htmlTemplate, {
+                      meassage: 'Post has liked by user',
+                      username: jsonUser.username,
+                      post: jsonPost.body,
+                      likes: jsonPost.likes,
+                      comments: jsonPost.comments
+                  })
 
                   var messageToSend = {
                     from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',

@@ -4,8 +4,22 @@
     <title>Application</title>
   </head>
   <body>
-    <p><b>Hello</b> {username}</p>
-    <p>New post added to our site:</p>
-    <p>{post}</p>
+    <p><b>Hello</b> <%= username %></p>
+    <p><%= post %></p>
+    <% if(likes.length > 0) { %>
+      <p>Liked this post: 
+        <% likes.forEach(function(like) {%>
+           <%= like.username %> 
+        <% }) %>
+      </p>
+    <% } %>
+    <% if(comments.length > 0) { %>
+      <p>Comments: </p>
+      <ul>
+        <% comments.forEach(function(comment) {%>
+           <li><%= comment.body %> - <%= comment.createdBy.username %></li>
+        <% }) %>
+      </ul>
+    <% } %>
   </body>
 </html>
