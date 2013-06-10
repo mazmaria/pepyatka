@@ -2078,6 +2078,11 @@ App.StatsRoute = Ember.Route.extend({
   }
 })
 
+App.mails = Ember.Object.create({
+  selected: null,
+  content: ["all", "no"]
+});
+
 App.User.reopenClass({
   resourceUrl: '/v1/users',
 
@@ -2097,11 +2102,11 @@ App.User.reopenClass({
 App.SettingsController = Ember.ObjectController.extend({
   resourceUrl: '/v1/user/settings',
 
-  save: function(email) {
+  save: function(email, receiveEmails) {
     $.ajax({
       url: this.resourceUrl,
       type: 'post',
-      data: { email: email, '_method': 'patch' },
+      data: { email: email, receiveEmails: receiveEmails, '_method': 'patch' },
       context: this,
       success: function(response) {
         this.set('content', response);
@@ -2113,13 +2118,14 @@ App.SettingsController = Ember.ObjectController.extend({
 
 App.SettingsView = Ember.View.extend({
   emailBinding: 'controller.content.info.email',
+  receiveEmailsBinding: 'controller.content.info.receiveEmails',
 
   insertNewline: function() {
     this.triggerAction();
   },
 
   save: function() {
-    this.get('controller').save(this.email)
+    this.get('controller').save(this.email, this.receiveEmails)
   }
 });
 

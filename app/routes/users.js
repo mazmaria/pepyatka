@@ -25,7 +25,7 @@ exports.addRoutes = function(app) {
       select: ['id', 'username', 'type', 'admins']
     },
     info: {
-      select: ['email']
+      select: ['email', 'receiveEmails']
     }
   }
 
@@ -58,7 +58,7 @@ exports.addRoutes = function(app) {
     if (!req.user)
       return res.jsonp({})
     models.FeedFactory.findById(req.user.id, function(err, user) {
-      var params = { email: req.param('email') }
+      var params = { email: req.param('email'), receiveEmails: req.param('receiveEmails') }
       user.update(params, function(err, user) {
         if (err) return res.jsonp({}, 422)
         user.toJSON(userSerializer, function(err, json) { res.jsonp(json) })

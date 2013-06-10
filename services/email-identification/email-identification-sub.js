@@ -54,6 +54,7 @@ exports.listen = function() {
 
               user.toJSON(userSerializer, function(err, jsonUser) {
                 if (jsonUser.info === null) return
+                if (jsonUser.info.receiveEmails.toString() !== 'all') return
 
                 html = ejs.render(htmlTemplate, {
                   username: jsonUser.username,
@@ -81,6 +82,7 @@ exports.listen = function() {
       case 'newComment':
         var data = JSON.parse(msg);
         if (htmlTemplate === undefined) return
+
         models.Comment.findById(data.commentId, function(err, comment) {
           if (!comment) return
           models.Post.findById(data.postId, function(err, post) {
@@ -97,6 +99,7 @@ exports.listen = function() {
 
                   user.toJSON(userSerializer, function(err, jsonUser) {
                     if (jsonUser.info === null) return
+                    if (jsonUser.info.receiveEmails.toString() !== 'all') return
 
                     html = ejs.render(htmlTemplate, {
                       username: jsonUser.username,
@@ -114,7 +117,6 @@ exports.listen = function() {
                       },
                       html: html
                     };
-                    console.log('!! ' + jsonUser.info.email)
                     mailer.sendMailToUser(conf, messageToSend)
                   })
                 })
@@ -141,6 +143,7 @@ exports.listen = function() {
 
                 user.toJSON(userSerializer, function(err, jsonUser) {
                   if (jsonUser.info === null) return
+                  if (jsonUser.info.receiveEmails.toString() !== 'all') return
 
                   html = ejs.render(htmlTemplate, {
                       meassage: 'Post has liked by user',
