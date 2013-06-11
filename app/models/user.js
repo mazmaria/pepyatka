@@ -22,7 +22,6 @@ exports.addModel = function(db) {
       this.updatedAt = parseInt(params.updatedAt, 10)
 
     this.type = "user"
-    this.screenName = 'screenname'
   }
 
   User.getAttributes = function() {
@@ -96,6 +95,10 @@ exports.addModel = function(db) {
       attrs.id = userId
 
       var newUser = new User(attrs)
+
+      newUser.getInfo(function(err, info) {
+        newUser.screenName = info.screenName
+      })
 
       newUser.getTimelines({}, function(err, timelines) {
         newUser.timelines = timelines
