@@ -97,6 +97,14 @@ exports.addModel = function(db) {
       var newUser = new User(attrs)
 
       newUser.getInfo(function(err, info) {
+        if (info === undefined || info === null) {
+          newUser.screenName = newUser.username
+          return
+        }
+        if (info.screenName === undefined || info.screenName === null) {
+          newUser.screenName = newUser.username
+          return
+        }
         newUser.screenName = info.screenName
       })
 
@@ -740,8 +748,18 @@ exports.addModel = function(db) {
         json.type = that.type
 
       if (select.indexOf('info') != -1) {
-        that.getInfo(function(err, items) {
-          json.info = items
+        that.getInfo(function(err, info) {
+          if (info === undefined || info === null) {
+            json.info = {
+              screenName: that.username
+            }
+            return
+          }
+          if (info.screenName === undefined  || info.screenName === null) {
+            json.info.screenName = that.username
+            return
+          }
+          json.info = info
           returnJSON(err)
         })
       }

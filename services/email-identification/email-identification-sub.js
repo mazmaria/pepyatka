@@ -21,14 +21,15 @@ var postSerializer = {
   select: ['id', 'body', 'createdBy', 'attachments', 'comments', 'createdAt', 'updatedAt', 'likes', 'groups'],
   createdBy: { select: ['id', 'username'] },
   comments: { select: ['id', 'body', 'createdBy'],
-              createdBy: { select: ['id', 'username'] }},
-  likes: { select: ['id', 'username']},
+              createdBy: { select: ['id', 'username', 'info'],
+                info: { select: ['screenName'] } }},
+  likes: { select: ['id', 'username', 'info'],
+            info: { select: ['screenName'] }},
   groups: { select: ['id', 'username'] }
 }
 
-var userSerializer = {select: ['id', 'username', 'type', 'info']}
-
-var commentSerializer = {select: ['id', 'body', 'postId', 'updatedAt', 'createdBy', 'createdAt']}
+var userSerializer = { select: ['id', 'username', 'type', 'info'],
+                        info: { select: ['screenName', 'email', 'receiveEmails'] }}
 
 exports.listen = function() {
 
@@ -57,7 +58,7 @@ exports.listen = function() {
                 if (jsonUser.info.receiveEmails.toString() !== 'all') return
 
                 html = ejs.render(htmlTemplate, {
-                  username: jsonUser.username,
+                  username: jsonUser.info.screenName,
                   post: post.body,
                   likes: [],
                   comments: []
@@ -65,7 +66,7 @@ exports.listen = function() {
 
                 var messageToSend = {
                   from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
-                  to: jsonUser.username + ' <' + jsonUser.info.email + '>',
+                  to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
                   subject: 'New post added to our site',
                   headers: {
                     'X-Laziness-level': 1000
@@ -102,7 +103,7 @@ exports.listen = function() {
                     if (jsonUser.info.receiveEmails.toString() !== 'all') return
 
                     html = ejs.render(htmlTemplate, {
-                      username: jsonUser.username,
+                      username: jsonUser.info.screenName,
                       post: jsonPost.body,
                       likes: jsonPost.likes,
                       comments: jsonPost.comments
@@ -110,7 +111,7 @@ exports.listen = function() {
 
                     var messageToSend = {
                       from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
-                      to: jsonUser.username + ' <' + jsonUser.info.email + '>',
+                      to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
                       subject: 'Post has commented by user',
                       headers: {
                         'X-Laziness-level': 1000
@@ -147,7 +148,7 @@ exports.listen = function() {
 
                   html = ejs.render(htmlTemplate, {
                       meassage: 'Post has liked by user',
-                      username: jsonUser.username,
+                      username: jsonUser.info.screenName,
                       post: jsonPost.body,
                       likes: jsonPost.likes,
                       comments: jsonPost.comments
@@ -155,7 +156,7 @@ exports.listen = function() {
 
                   var messageToSend = {
                     from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
-                    to: jsonUser.username + ' <' + jsonUser.info.email + '>',
+                    to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
                     subject: 'Post has liked by user',
                     headers: {
                       'X-Laziness-level': 1000
