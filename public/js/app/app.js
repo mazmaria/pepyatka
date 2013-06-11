@@ -2105,11 +2105,11 @@ App.User.reopenClass({
 App.SettingsController = Ember.ObjectController.extend({
   resourceUrl: '/v1/user/settings',
 
-  save: function(screenName, email, receiveEmails) {
+  save: function(params) {
     $.ajax({
       url: this.resourceUrl,
       type: 'post',
-      data: { screenName: screenName, email: email, receiveEmails: receiveEmails, '_method': 'patch' },
+      data: { params: params, '_method': 'patch' },
       context: this,
       success: function(response) {
         this.set('content', response);
@@ -2129,7 +2129,12 @@ App.SettingsView = Ember.View.extend({
   },
 
   save: function() {
-    this.get('controller').save(this.screenName, this.email, this.receiveEmails)
+    var params = {
+      screenName: this.screenName,
+      email: this.email,
+      receiveEmails: this.receiveEmails
+    }
+    this.get('controller').save(params)
   }
 });
 

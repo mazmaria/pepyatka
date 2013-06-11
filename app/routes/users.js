@@ -64,12 +64,7 @@ exports.addRoutes = function(app) {
     if (!req.user)
       return res.jsonp({})
     models.FeedFactory.findById(req.user.id, function(err, user) {
-      var params = {
-        screenName: req.param('screenName'),
-        email: req.param('email'),
-        receiveEmails: req.param('receiveEmails')
-      }
-      user.update(params, function(err, user) {
+      user.update(req.param('params'), function(err, user) {
         if (err) return res.jsonp({}, 422)
         user.toJSON(userSerializer, function(err, json) { res.jsonp(json) })
       })
