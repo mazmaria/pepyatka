@@ -224,9 +224,9 @@ exports.addModel = function(db) {
                 },
                 function(done) {
                   db.hmset('user:' + that.id + ':info',
-                           { 'screenName': params.screenName.toString().trim(),
-                             'email': params.email.toString().trim(),
-                             'receiveEmails': params.receiveEmails.toString().trim()
+                           { 'screenName': (params.screenName !== null) ? params.screenName.toString().trim() : null,
+                             'email': (params.email !== null) ? params.email.toString().trim(): null,
+                             'receiveEmails': (params.receiveEmails !== null) ? params.receiveEmails.toString().trim() : null
                            }, function(err, res) {
                              done(err, res)
                            })
@@ -737,17 +737,8 @@ exports.addModel = function(db) {
 
       if (select.indexOf('info') != -1) {
         that.getInfo(function(err, info) {
-          if (info === undefined || info === null) {
-            json.info = {
-              screenName: that.username
-            }
-            return
-          }
-          if (info.screenName === undefined  || info.screenName === null) {
-            json.info.screenName = that.username
-            return
-          }
-          json.info = info
+          if (info !== undefined)
+            json.info = info
           returnJSON(err)
         })
       }
