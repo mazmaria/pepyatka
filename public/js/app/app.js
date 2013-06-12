@@ -2132,7 +2132,7 @@ App.SettingsView = Ember.View.extend({
     var params = {
       screenName: this.screenName,
       email: this.email,
-      receiveEmails: this.receiveEmails
+      receiveEmails: (this.receiveEmails !== undefined) ? this.receiveEmails : null
     }
     this.get('controller').save(params)
   }

@@ -21,7 +21,7 @@ exports.addModel = function(db) {
     if (parseInt(params.updatedAt, 10))
       this.updatedAt = parseInt(params.updatedAt, 10)
 
-    this.type = "user"
+    this.type = params.type
   }
 
   User.getAttributes = function() {

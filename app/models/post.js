@@ -254,6 +254,10 @@ exports.addModel = function(db) {
       post.getSubscribedTimelinesIds(function(err, timelinesIds) {
         models.User.findById(userId, function(err, user) {
           user.getRiverOfNewsId(function(err, timelineId) {
+            var inRiverOfNews = timelinesIds.reduce(function (number, timelineItem){
+                if (timelineItem === timelineId) number++
+                return number
+            }, 0);
             timelinesIds.push(timelineId)
             user.getLikesTimeline({}, function(err, timeline) {
               timelinesIds.push(timeline.id)
@@ -271,7 +275,8 @@ exports.addModel = function(db) {
 
                       pub.publish('newLike',
                                   JSON.stringify({ userId: userId,
-                                                   postId: postId }))
+                                                   postId: postId,
+                                                   inRiverOfNews: inRiverOfNews}))
 
                       timelinesIds = _.uniq(timelinesIds)
                       async.forEach(Object.keys(timelinesIds), function(timelineId, callback) {
@@ -282,7 +287,8 @@ exports.addModel = function(db) {
                           pub.publish('newLike',
                                       JSON.stringify({ timelineId: timelinesIds[timelineId],
                                                        userId: userId,
-                                                       postId: postId }))
+                                                       postId: postId,
+                                                       inRiverOfNews: inRiverOfNews}))
                           callback(err, res);
                         })
                       }, function(err) {
@@ -322,6 +328,12 @@ exports.addModel = function(db) {
         models.Comment.findById(commentId, function(err, comment) {
           models.User.findById(comment.userId, function(err, user) {
             user.getRiverOfNewsId(function(err, timelineId) {
+
+            var inRiverOfNews = timelinesIds.reduce(function (number, timelineItem){
+              if (timelineItem === timelineId) number++
+              return number
+            }, 0);
+
               timelinesIds.push(timelineId)
               user.getCommentsTimeline({}, function(err, timeline) {
                 timelinesIds.push(timeline.id)
@@ -341,7 +353,8 @@ exports.addModel = function(db) {
 
                         pub.publish('newComment', JSON.stringify({
                           postId: postId,
-                          commentId: commentId
+                          commentId: commentId,
+                          inRiverOfNews: inRiverOfNews
                         }))
 
                         timelinesIds = _.uniq(timelinesIds)
@@ -352,7 +365,8 @@ exports.addModel = function(db) {
                           models.Timeline.updatePost(timelinesIds[timelineId], postId, function(err, res) {
                             pub.publish('newComment', JSON.stringify({
                               timelineId: timelinesIds[timelineId],
-                              commentId: commentId
+                              commentId: commentId,
+                              inRiverOfNews: inRiverOfNews
                             }))
 
                             callback(err);
