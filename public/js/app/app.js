@@ -1592,6 +1592,7 @@ App.SigninController = Ember.ObjectController.extend({
         case 'success':
           App.properties.set('isAuthorized', true)
           App.properties.set('username', response.user.username)
+          App.properties.set('screenName', response.user.info.screenName)
           App.properties.set('userId', response.user.id)
           App.groupsController.loadGroups()
           this.transitionToRoute('posts')

@@ -7,7 +7,8 @@ exports.addRoutes = function(app) {
     app.post('/v1/signup', function(req, res) {
       var newUser = new models.User( {
         username: req.body.username,
-        password: req.body.password
+        password: req.body.password,
+        type: 'user'
       })
 
       models.User.findByUsername(newUser.username, function(err, user) {
