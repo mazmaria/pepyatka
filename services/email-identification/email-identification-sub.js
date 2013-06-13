@@ -10,7 +10,7 @@ var htmlTemplate
 
 fs.readFile('app/scripts/views/mailer/index.ejs', 'utf8', function (err, template) {
   if (err) {
-    return console.log(err);
+    return //console.log(err);
   }
   htmlTemplate = template
 });
@@ -49,6 +49,7 @@ exports.listen = function() {
           models.Timeline.findById(data.timelineId, {}, function(err, timeline) {
             if (!timeline) return
             if (timeline.userId === undefined) return
+            if (timeline.name !== 'River of news') return
 
             models.User.findById(timeline.userId, function(err, user) {
               if (!user) return
@@ -85,39 +86,47 @@ exports.listen = function() {
         var data = JSON.parse(msg);
         if (data.inRiverOfNews !== 0) return
         if (htmlTemplate === undefined) return
+        if (data.timelineId === undefined) return
 
         models.Comment.findById(data.commentId, function(err, comment) {
           if (!comment) return
-          models.Post.findById(data.postId, function(err, post) {
+          models.Post.findById(comment.postId, function(err, post) {
             if (!post) return
 
             post.toJSON(postSerializer, function(err, jsonPost) {
 
-              models.User.findById(comment.userId, function(err, user) {
-                if (!user) return
-                if (user.type === 'group') return
+              models.Timeline.findById(data.timelineId, {}, function(err, timeline) {
+                if (!timeline) return
+                if (timeline.userId === undefined) return
+                if (timeline.name !== 'River of news') return
 
-                user.toJSON(userSerializer, function(err, jsonUser) {
-                  if (jsonUser.info === null) return
-                  if (jsonUser.info.receiveEmails.toString() !== 'all') return
+                models.User.findById(timeline.userId, function(err, user) {
+                  if (!user) return
+                  if (user.id === post.userId) return
+                  if (user.type === 'group') return
 
-                  html = ejs.render(htmlTemplate, {
-                    username: jsonUser.info.screenName,
-                    post: jsonPost.body,
-                    likes: jsonPost.likes,
-                    comments: jsonPost.comments
+                  user.toJSON(userSerializer, function(err, jsonUser) {
+                    if (jsonUser.info === null) return
+                    if (jsonUser.info.receiveEmails.toString() !== 'all') return
+
+                    html = ejs.render(htmlTemplate, {
+                      username: jsonUser.info.screenName,
+                      post: jsonPost.body,
+                      likes: jsonPost.likes,
+                      comments: jsonPost.comments
+                    })
+
+                    var messageToSend = {
+                      from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
+                      to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
+                      subject: 'Post has commented by user',
+                      headers: {
+                        'X-Laziness-level': 1000
+                      },
+                      html: html
+                    };
+                    mailer.sendMailToUser(conf, messageToSend)
                   })
-
-                  var messageToSend = {
-                    from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
-                    to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
-                    subject: 'Post has commented by user',
-                    headers: {
-                      'X-Laziness-level': 1000
-                    },
-                    html: html
-                  };
-                  mailer.sendMailToUser(conf, messageToSend)
                 })
               })
             })
@@ -129,38 +138,46 @@ exports.listen = function() {
         var data = JSON.parse(msg);
         if (data.inRiverOfNews !== 0) return
         if (htmlTemplate === undefined) return
+        if (data.timelineId === undefined) return
 
         models.Post.findById(data.postId, function(err, post) {
           if (!post) return
 
           post.toJSON(postSerializer, function(err, jsonPost) {
 
-            models.User.findById(data.userId, function(err, user) {
-              if (!user) return
-              if (user.type === 'group') return
+            models.Timeline.findById(data.timelineId, {}, function(err, timeline) {
+              if (!timeline) return
+              if (timeline.userId === undefined) return
+              if (timeline.name !== 'River of news') return
 
-              user.toJSON(userSerializer, function(err, jsonUser) {
-                if (jsonUser.info === null) return
-                if (jsonUser.info.receiveEmails.toString() !== 'all') return
+              models.User.findById(timeline.userId, function(err, user) {
+                if (!user) return
+                if (user.id === post.userId) return
+                if (user.type === 'group') return
 
-                html = ejs.render(htmlTemplate, {
-                    meassage: 'Post has liked by user',
-                    username: jsonUser.info.screenName,
-                    post: jsonPost.body,
-                    likes: jsonPost.likes,
-                    comments: jsonPost.comments
+                user.toJSON(userSerializer, function(err, jsonUser) {
+                  if (jsonUser.info === null) return
+                  if (jsonUser.info.receiveEmails.toString() !== 'all') return
+
+                  html = ejs.render(htmlTemplate, {
+                      meassage: 'Post has liked by user',
+                      username: jsonUser.info.screenName,
+                      post: jsonPost.body,
+                      likes: jsonPost.likes,
+                      comments: jsonPost.comments
+                  })
+
+                  var messageToSend = {
+                    from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
+                    to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
+                    subject: 'Post has liked by user',
+                    headers: {
+                      'X-Laziness-level': 1000
+                    },
+                    html: htmlTemplate
+                  };
+                  mailer.sendMailToUser(conf, messageToSend)
                 })
-
-                var messageToSend = {
-                  from: conf.sendFromName + ' <' + conf.sendFromEmail + '>',
-                  to: jsonUser.info.screenName + ' <' + jsonUser.info.email + '>',
-                  subject: 'Post has liked by user',
-                  headers: {
-                    'X-Laziness-level': 1000
-                  },
-                  html: htmlTemplate
-                };
-                mailer.sendMailToUser(conf, messageToSend)
               })
             })
           })
