@@ -1091,8 +1091,6 @@ App.User = Ember.Object.extend({
   admins: [],
   type: null,
 
-  screenName: null,
-
   subscriptionsLength: function() {
     if (!this.statistics || !this.statistics.subscriptions || this.statistics.subscriptions <= 0)
       return null

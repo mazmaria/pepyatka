@@ -91,15 +91,19 @@ exports.addModel = function(db) {
     db.hgetall('user:' + userId, function(err, attrs) {
       if (attrs === null)
         return callback(1, null)
+      db.hgetall('user:' + userId + ':info', function(err, info) {
 
-      attrs.id = userId
+        attrs.id = userId
 
-      var newUser = new User(attrs)
+        var newUser = new User(attrs)
+        if (info !== null)
+          newUser.info = info
 
-      newUser.getTimelines({}, function(err, timelines) {
-        newUser.timelines = timelines
+        newUser.getTimelines({}, function(err, timelines) {
+          newUser.timelines = timelines
 
-        callback(err, newUser)
+          callback(err, newUser)
+        })
       })
     })
   },

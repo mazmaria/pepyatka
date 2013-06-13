@@ -877,7 +877,11 @@
   <% if (req.user) { %>
     currentUser = '<%= req.user.id %>'
     var currentUsername = '<%= req.user.username %>'
-    var currentScreenName = '<%= req.user.screenName %>'
+    <% if (req.user.info) { %>
+      var currentScreenName = '<%= req.user.info.screenName %>'
+    <% } else { %>
+      var currentScreenName = '<%= req.user.username %>'
+    <% } %>
     isAnonymousPermitted = '<%= req.isAnonymousPermitted %>'
   <% } %>
 
