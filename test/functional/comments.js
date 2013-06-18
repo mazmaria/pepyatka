@@ -12,9 +12,10 @@ describe('Comment API', function() {
   before(function(done) {
     var newUser = new models.User({
       username: 'username',
-      password: 'password'
+      password: 'password',
+      type: 'user'
     })
-    newUser.save(function(err, user) {
+    newUser.create(function(err, user) {
       userAgent = agent.agent();
       userAgent
         .post('localhost:' + server.get('port') + '/v1/session')

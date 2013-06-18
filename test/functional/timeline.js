@@ -23,9 +23,10 @@ describe('Timeline API', function() {
 
     var newUser = new models.User({
       username: 'username',
-      password: 'password'
+      password: 'password',
+      type: 'user'
     })
-    newUser.save(function(err, user) {
+    newUser.create(function(err, user) {
       userAgent = agent.agent();
       userAgent
         .post('localhost:' + server.get('port') + '/v1/session')
@@ -38,9 +39,10 @@ describe('Timeline API', function() {
 
     var newUser2 = new models.User({
       username: 'username2',
-      password: 'password'
+      password: 'password',
+      type: 'user'
     })
-    newUser2.save(function(err, user) {
+    newUser2.create(function(err, user) {
       user2Agent = agent.agent();
       user2Agent
         .post('localhost:' + server.get('port') + '/v1/session')

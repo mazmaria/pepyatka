@@ -216,7 +216,7 @@ exports.addModel = function(db) {
     }
 
     this.validate(function(valid) {
-      if (!valid)
+      if (valid == 'false')
         return callback(1, that)
 
       db.exists('user:' + that.id, function(err, res) {
