@@ -128,26 +128,20 @@ describe('Users API', function() {
           type: 'group'
         })
         newGroup.create(user2.id, function(err, group) {
-          groupAgent = agent.agent();
-          user2Agent
-            .post('localhost:' + server.get('port') + '/v1/users')
-            .send({ username: 'Group' + randomNumber, type: 'group' })
-            .end(function(err, res) {
-              models.Group.findById(res.body.id, function(err, group) {
-                group.getPostsTimeline({start: 0}, function(err, timeline) {
-                  userAgent
-                    .post('localhost:' + server.get('port') + '/v1/timeline/' + timeline.id + '/subscribe')
+          models.Group.findById(group.id, function(err, group) {
+            group.getPostsTimeline({start: 0}, function(err, timeline) {
+              userAgent
+                .post('localhost:' + server.get('port') + '/v1/timeline/' + timeline.id + '/subscribe')
+                .end(function(err, res) {
+                  user2Agent
+                    .post('localhost:' + server.get('port') + '/v1/users/' + group.username + '/subscribers/' + user.id + '/admin')
                     .end(function(err, res) {
-                      user2Agent
-                        .post('localhost:' + server.get('port') + '/v1/users/' + group.username + '/subscribers/' + user.id + '/admin')
-                        .end(function(err, res) {
-                          assert.equal(res.body.status, 'success')
-                          done()
-                        })
+                      assert.equal(res.body.status, 'success')
+                      done()
                     })
                 })
-              })
             })
+          })
         })
       })
     })
@@ -162,30 +156,24 @@ describe('Users API', function() {
           type: 'group'
         })
         newGroup.create(user2.id, function(err, group) {
-          groupAgent = agent.agent();
-          user2Agent
-            .post('localhost:' + server.get('port') + '/v1/users')
-            .send({ username: 'Group' + randomNumber, type: 'group' })
-            .end(function(err, res) {
-              models.Group.findById(res.body.id, function(err, group) {
-                group.getPostsTimeline({start: 0}, function(err, timeline) {
-                  userAgent
-                    .post('localhost:' + server.get('port') + '/v1/timeline/' + timeline.id + '/subscribe')
+          models.Group.findById(group.id, function(err, group) {
+            group.getPostsTimeline({start: 0}, function(err, timeline) {
+              userAgent
+                .post('localhost:' + server.get('port') + '/v1/timeline/' + timeline.id + '/subscribe')
+                .end(function(err, res) {
+                  user2Agent
+                    .post('localhost:' + server.get('port') + '/v1/users/' + group.username + '/subscribers/' + user.id + '/admin')
                     .end(function(err, res) {
-                      user2Agent
-                        .post('localhost:' + server.get('port') + '/v1/users/' + group.username + '/subscribers/' + user.id + '/admin')
+                      userAgent
+                        .post('localhost:' + server.get('port') + '/v1/users/' + group.username + '/subscribers/' + user.id + '/unadmin')
                         .end(function(err, res) {
-                          userAgent
-                            .post('localhost:' + server.get('port') + '/v1/users/' + group.username + '/subscribers/' + user.id + '/unadmin')
-                            .end(function(err, res) {
-                              assert.equal(res.body.status, 'success')
-                              done()
-                            })
+                          assert.equal(res.body.status, 'success')
+                          done()
                         })
                     })
                 })
-              })
             })
+          })
         })
       })
     })
@@ -201,6 +189,17 @@ describe('Users API', function() {
           done()
         })
     })
+  })
+
+  it ('POST /v1/signup should create a new user', function(done) {
+    request(server)
+      .post('/v1/signup')
+      .send({ username: 'username' + Math.floor(Math.random() * (9999-1000)+1000), password: 'password' })
+      .expect(200)
+      .end(function(err, res) {
+        assert.equal(res.body.status, 'success')
+        done()
+      })
   })
 
   it('GET /v1/users/:userId should return user', function(done) {

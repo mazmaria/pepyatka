@@ -46,7 +46,7 @@ exports.addRoutes = function(app) {
     newGroup.create(req.user.id, function(err, group) {
       if (err) return res.jsonp({ err: err, status: 'fail'})
       
-      res.jsonp({ err: null, status: 'success', id: group.id})
+      res.jsonp({ err: null, status: 'success'})
     })
   })
 
