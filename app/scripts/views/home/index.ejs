@@ -67,9 +67,9 @@
               </div>
               <div>
 
-              <% if (req.user && req.user.username != 'anonymous') { %>
-                {{#linkTo settings}}{{t label.settings}}{{/linkTo}}
-              <% } %>
+                <% if (!conf.remoteUser) { %>
+                  {{#linkTo settings}}{{t label.settings}}{{/linkTo}}
+                <% } %>
 
                 <% if (!conf.remoteUser) { %>
                   <a href="/logout">{{t label.signout}}</a>
